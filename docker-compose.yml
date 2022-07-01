@@ -1,10 +1,5 @@
 version: "3.8"
 
-volumes:
-  db:
-  cms_modules:
-  cms_uploads:
-
 services:
   attacker:
     build: 
