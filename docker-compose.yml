@@ -1,0 +1,88 @@
+version: "3.8"
+
+volumes:
+  db:
+  cms_modules:
+  cms_uploads:
+
+services:
+  attacker:
+    build: 
+      context: ./dockerfiles
+      dockerfile: attacker.Dockerfile
+
+    container_name: attacker
+    hostname: attacker
+    extra_hosts:
+        - "helper:172.16.101.11"
+    links:
+      - helper 
+
+    networks:
+      attacker:
+        ipv4_address: 172.16.100.10
+
+  helper:
+    build: 
+      context: ./dockerfiles
+      dockerfile: helper.Dockerfile
+
+    container_name: helper
+    hostname: helper
+    extra_hosts:
+      - "victim1:172.16.101.20"
+
+    networks:
+      attacker:
+        ipv4_address: 172.16.100.11
+
+      victim:
+        ipv4_address: 172.16.101.11
+
+  victim1:
+    build:
+      context: ./dockerfiles
+      dockerfile: victim1.Dockerfile
+
+    hostname: victim1
+    container_name: victim1
+  
+    extra_hosts:
+        - "helper:172.16.101.11"
+        - "victim2:172.16.101.21"
+
+    networks:
+      victim:
+        ipv4_address: 172.16.101.20
+
+  victim2:
+     image: vulhub/wordpress:4.6
+     container_name: victim2
+     hostname: victim2
+     depends_on:
+       - mysql
+     environment: 
+        - WORDPRESS_DB_HOST=172.16.101.22:3306
+        - WORDPRESS_DB_USER=root
+        - WORDPRESS_DB_PASSWORD=root
+        - WORDPRESS_DB_NAME=wordpress
+     ports:
+        - "8080:80"
+     extra_hosts:
+        - "helper:172.16.101.11"
+        - "victim1:172.16.101.20"
+
+     networks:
+        victim:
+          ipv4_address: 172.16.101.21
+
+  mysql:
+     image: mysql:5
+     container_name: victim2_mysql
+     hostname: victim2sql
+     environment: 
+      - MYSQL_ROOT_PASSWORD=root
+
+     networks:
+        victim:
+          ipv4_address: 172.16.101.22
