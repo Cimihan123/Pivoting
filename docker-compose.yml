@@ -9,7 +9,7 @@ services:
     container_name: attacker
     hostname: attacker
     extra_hosts:
-        - "helper:172.16.101.11"
+        - "helper:172.16.100.11"
     links:
       - helper 
 
@@ -26,6 +26,7 @@ services:
     hostname: helper
     extra_hosts:
       - "victim1:172.16.101.20"
+      - "victim2:172.16.101.21"
 
     networks:
       attacker:

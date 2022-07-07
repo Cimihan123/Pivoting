@@ -8,7 +8,7 @@ RUN apt install iputils-ping -y
 
 RUN apt install net-tools -y
 
-RUN echo 'root:kiransau' | chpasswd
+RUN echo 'root:123456789' | chpasswd
 
 RUN sed -i "s/#PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
 
