@@ -14,4 +14,6 @@ RUN sed -i "s/#PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/
 
 RUN sed -i "s/#PermitRootLogin yes/PermitRootLogin yes/g" /etc/ssh/sshd_config
 
+RUN echo 'GatewayPorts yes' >> /etc/ssh/sshd_config
+
 CMD ["/usr/sbin/sshd", "-D"]

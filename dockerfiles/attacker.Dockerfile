@@ -14,8 +14,10 @@ RUN apt install -y net-tools
 
 RUN apt install -y iproute2
 
-RUN apt install -y proxychains
+RUN apt install -y proxychains4
 
 RUN apt install hydra -y
+
+RUN apt install ncat -y
 
 RUN curl https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Leaked-Databases/rockyou-05.txt -o /home/rock.txt

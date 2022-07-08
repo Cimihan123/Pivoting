@@ -5,14 +5,12 @@ services:
     build: 
       context: ./dockerfiles
       dockerfile: attacker.Dockerfile
-
     container_name: attacker
     hostname: attacker
     extra_hosts:
         - "helper:172.16.100.11"
     links:
       - helper 
-
     networks:
       attacker:
         ipv4_address: 172.16.100.10
@@ -21,17 +19,14 @@ services:
     build: 
       context: ./dockerfiles
       dockerfile: helper.Dockerfile
-
     container_name: helper
     hostname: helper
     extra_hosts:
       - "victim1:172.16.101.20"
       - "victim2:172.16.101.21"
-
     networks:
       attacker:
         ipv4_address: 172.16.100.11
-
       victim:
         ipv4_address: 172.16.101.11
 
@@ -39,14 +34,11 @@ services:
     build:
       context: ./dockerfiles
       dockerfile: victim1.Dockerfile
-
     hostname: victim1
     container_name: victim1
-  
     extra_hosts:
         - "helper:172.16.101.11"
         - "victim2:172.16.101.21"
-
     networks:
       victim:
         ipv4_address: 172.16.101.20
@@ -67,10 +59,11 @@ services:
      extra_hosts:
         - "helper:172.16.101.11"
         - "victim1:172.16.101.20"
-
      networks:
         victim:
           ipv4_address: 172.16.101.21
+     volumes:
+      - wp_vol:/var/www/html
 
   mysql:
      image: mysql:5
@@ -78,7 +71,25 @@ services:
      hostname: victim2sql
      environment: 
       - MYSQL_ROOT_PASSWORD=root
-
      networks:
         victim:
           ipv4_address: 172.16.101.22
+  
+
+  wp-cli:
+    image: forumone/wordpress-cli:7.1-cli2.3.0
+    depends_on:
+      - mysql
+      - victim2
+    volumes:
+      - wp_vol:/var/www/html
+    networks:
+        victim:
+    command: >
+      /bin/sh -c '
+      sleep 10;
+      wp core install --path="/var/www/html" --url="http://172.16.101.21" --title="Pivot Your Way" --admin_user=admin --admin_password=adminpass --admin_email=admin@admin.com --allow-root
+      '
+
+volumes:
+  wp_vol:
