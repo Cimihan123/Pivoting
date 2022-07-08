@@ -74,7 +74,6 @@ services:
      networks:
         victim:
           ipv4_address: 172.16.101.22
-  
 
   wp-cli:
     image: forumone/wordpress-cli:7.1-cli2.3.0
